@@ -118,45 +118,34 @@ class _CashbookOverviewScreenState
                           padding: const EdgeInsets.only(
                             bottom: AppSpacing.s16,
                           ),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.s12,
-                              vertical: AppSpacing.s4,
+                          child: AppDropdown<String?>(
+                            compact: true,
+                            value: _selectedFairId,
+                            sheetTitle: 'Select Book Fair',
+                            sheetSubtitle:
+                                'Filter accounts and cashbooks by fair',
+                            prefixIcon: const Icon(
+                              Icons.store_rounded,
+                              size: 20,
                             ),
-                            decoration: BoxDecoration(
-                              color: colors.surfaceContainer,
-                              borderRadius: AppRadius.brMedium,
-                              border: Border.all(color: colors.borderSubtle),
-                            ),
-                            child: DropdownButtonHideUnderline(
-                              child: DropdownButton<String?>(
-                                value: _selectedFairId,
-                                isExpanded: true,
-                                icon: const Icon(
-                                  Icons.keyboard_arrow_down_rounded,
+                            items: [
+                              const DropdownMenuItem(
+                                value: null,
+                                child: Text(
+                                  'All Book Fairs',
+                                  style: TextStyle(fontWeight: FontWeight.w600),
                                 ),
-                                items: [
-                                  const DropdownMenuItem(
-                                    value: null,
-                                    child: Text(
-                                      'All Book Fairs',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                  ...fairs.map(
-                                    (f) => DropdownMenuItem(
-                                      value: f.id,
-                                      child: Text(f.name),
-                                    ),
-                                  ),
-                                ],
-                                onChanged: (val) {
-                                  setState(() => _selectedFairId = val);
-                                },
                               ),
-                            ),
+                              ...fairs.map(
+                                (f) => DropdownMenuItem(
+                                  value: f.id,
+                                  child: Text(f.name),
+                                ),
+                              ),
+                            ],
+                            onChanged: (val) {
+                              setState(() => _selectedFairId = val);
+                            },
                           ),
                         );
                       },

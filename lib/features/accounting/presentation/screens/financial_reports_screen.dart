@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../app/theme/app_colors.dart';
-import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../core/components/app_badge.dart';
 import '../../../../core/components/app_card.dart';
+import '../../../../core/components/app_dropdown.dart';
 import '../../../../core/components/app_empty_state.dart';
 import '../../../../core/components/app_progress_bar.dart';
 import '../../../../core/extensions/context_extensions.dart';
@@ -87,41 +87,30 @@ class _FinancialReportsScreenState extends ConsumerState<FinancialReportsScreen>
                       AppSpacing.s16,
                       AppSpacing.s4,
                     ),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: AppSpacing.s12,
-                        vertical: AppSpacing.s4,
-                      ),
-                      decoration: BoxDecoration(
-                        color: colors.surfaceContainer,
-                        borderRadius: AppRadius.brMedium,
-                        border: Border.all(color: colors.borderSubtle),
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton<String?>(
-                          value: _selectedFairId,
-                          isExpanded: true,
-                          icon: const Icon(Icons.keyboard_arrow_down_rounded),
-                          items: [
-                            const DropdownMenuItem(
-                              value: null,
-                              child: Text(
-                                'All Book Fairs Combined',
-                                style: TextStyle(fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                            ...fairs.map(
-                              (f) => DropdownMenuItem(
-                                value: f.id,
-                                child: Text(f.name),
-                              ),
-                            ),
-                          ],
-                          onChanged: (val) {
-                            setState(() => _selectedFairId = val);
-                          },
+                    child: AppDropdown<String?>(
+                      compact: true,
+                      value: _selectedFairId,
+                      sheetTitle: 'Select Book Fair',
+                      sheetSubtitle: 'Filter financial reports by exhibition',
+                      prefixIcon: const Icon(Icons.store_rounded, size: 20),
+                      items: [
+                        const DropdownMenuItem(
+                          value: null,
+                          child: Text(
+                            'All Book Fairs Combined',
+                            style: TextStyle(fontWeight: FontWeight.w600),
+                          ),
                         ),
-                      ),
+                        ...fairs.map(
+                          (f) => DropdownMenuItem(
+                            value: f.id,
+                            child: Text(f.name),
+                          ),
+                        ),
+                      ],
+                      onChanged: (val) {
+                        setState(() => _selectedFairId = val);
+                      },
                     ),
                   );
                 },

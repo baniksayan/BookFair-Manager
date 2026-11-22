@@ -7,6 +7,7 @@ import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../core/components/app_badge.dart';
 import '../../../../core/components/app_card.dart';
+import '../../../../core/components/app_dropdown.dart';
 import '../../../../core/components/app_empty_state.dart';
 import '../../../../core/components/app_loading.dart';
 import '../../../../core/components/app_search_bar.dart';
@@ -70,46 +71,29 @@ class _ExpenseHistoryScreenState extends ConsumerState<ExpenseHistoryScreen> {
                         // Fair filter
                         Expanded(
                           child: fairsAsync.when(
-                            data: (fairs) => Container(
-                              height: 40,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: AppSpacing.s10,
+                            data: (fairs) => AppDropdown<String?>(
+                              compact: true,
+                              value: _selectedFairId,
+                              sheetTitle: 'Select Fair',
+                              sheetSubtitle: 'Filter expenses by book fair',
+                              prefixIcon: const Icon(
+                                Icons.store_rounded,
+                                size: 18,
                               ),
-                              decoration: BoxDecoration(
-                                color: colors.surfaceContainer,
-                                borderRadius: AppRadius.brSmall,
-                                border: Border.all(color: colors.borderSubtle),
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton<String?>(
-                                  value: _selectedFairId,
-                                  isExpanded: true,
-                                  icon: const Icon(
-                                    Icons.keyboard_arrow_down_rounded,
-                                    size: 18,
-                                  ),
-                                  items: [
-                                    const DropdownMenuItem(
-                                      value: null,
-                                      child: Text(
-                                        'All Fairs',
-                                        style: TextStyle(fontSize: 13),
-                                      ),
-                                    ),
-                                    ...fairs.map(
-                                      (f) => DropdownMenuItem(
-                                        value: f.id,
-                                        child: Text(
-                                          f.name,
-                                          style: const TextStyle(fontSize: 13),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                  onChanged: (val) =>
-                                      setState(() => _selectedFairId = val),
+                              items: [
+                                const DropdownMenuItem(
+                                  value: null,
+                                  child: Text('All Fairs'),
                                 ),
-                              ),
+                                ...fairs.map(
+                                  (f) => DropdownMenuItem(
+                                    value: f.id,
+                                    child: Text(f.name),
+                                  ),
+                                ),
+                              ],
+                              onChanged: (val) =>
+                                  setState(() => _selectedFairId = val),
                             ),
                             loading: () => const SizedBox.shrink(),
                             error: (_, _) => const SizedBox.shrink(),
@@ -120,46 +104,29 @@ class _ExpenseHistoryScreenState extends ConsumerState<ExpenseHistoryScreen> {
                         // Category filter
                         Expanded(
                           child: categoriesAsync.when(
-                            data: (categories) => Container(
-                              height: 40,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: AppSpacing.s10,
+                            data: (categories) => AppDropdown<String?>(
+                              compact: true,
+                              value: _selectedCategoryId,
+                              sheetTitle: 'Select Category',
+                              sheetSubtitle: 'Filter expenses by category',
+                              prefixIcon: const Icon(
+                                Icons.layers_outlined,
+                                size: 18,
                               ),
-                              decoration: BoxDecoration(
-                                color: colors.surfaceContainer,
-                                borderRadius: AppRadius.brSmall,
-                                border: Border.all(color: colors.borderSubtle),
-                              ),
-                              child: DropdownButtonHideUnderline(
-                                child: DropdownButton<String?>(
-                                  value: _selectedCategoryId,
-                                  isExpanded: true,
-                                  icon: const Icon(
-                                    Icons.keyboard_arrow_down_rounded,
-                                    size: 18,
-                                  ),
-                                  items: [
-                                    const DropdownMenuItem(
-                                      value: null,
-                                      child: Text(
-                                        'All Categories',
-                                        style: TextStyle(fontSize: 13),
-                                      ),
-                                    ),
-                                    ...categories.map(
-                                      (c) => DropdownMenuItem(
-                                        value: c.id,
-                                        child: Text(
-                                          c.name,
-                                          style: const TextStyle(fontSize: 13),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                  onChanged: (val) =>
-                                      setState(() => _selectedCategoryId = val),
+                              items: [
+                                const DropdownMenuItem(
+                                  value: null,
+                                  child: Text('All Categories'),
                                 ),
-                              ),
+                                ...categories.map(
+                                  (c) => DropdownMenuItem(
+                                    value: c.id,
+                                    child: Text(c.name),
+                                  ),
+                                ),
+                              ],
+                              onChanged: (val) =>
+                                  setState(() => _selectedCategoryId = val),
                             ),
                             loading: () => const SizedBox.shrink(),
                             error: (_, _) => const SizedBox.shrink(),

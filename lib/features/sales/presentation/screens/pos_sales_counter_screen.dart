@@ -9,6 +9,7 @@ import '../../../../app/theme/app_spacing.dart';
 import '../../../../core/components/app_badge.dart';
 import '../../../../core/components/app_button.dart';
 import '../../../../core/components/app_card.dart';
+import '../../../../core/components/app_dropdown.dart';
 import '../../../../core/components/app_empty_state.dart';
 import '../../../../core/components/app_loading.dart';
 import '../../../../core/components/app_search_bar.dart';
@@ -112,11 +113,13 @@ class _PosSalesCounterScreenState extends ConsumerState<PosSalesCounterScreen> {
                     ),
                     AppSpacing.gapH12,
                     if (partners.isNotEmpty) ...[
-                      DropdownButtonFormField<String>(
-                        decoration: const InputDecoration(
-                          labelText: 'Authorizing Partner / Manager',
+                      AppDropdown<String>(
+                        label: 'Authorizing Partner / Manager',
+                        value: selectedPartnerId,
+                        prefixIcon: const Icon(
+                          Icons.person_outline_rounded,
+                          size: 20,
                         ),
-                        initialValue: selectedPartnerId,
                         items: partners
                             .map(
                               (p) => DropdownMenuItem(
@@ -312,37 +315,30 @@ class _PosSalesCounterScreenState extends ConsumerState<PosSalesCounterScreen> {
                 data: (fairs) {
                   if (fairs.isEmpty) return const SizedBox.shrink();
                   return Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.s12,
-                    ),
                     margin: const EdgeInsets.only(bottom: AppSpacing.s8),
-                    decoration: BoxDecoration(
-                      color: colors.surfaceContainer,
-                      borderRadius: AppRadius.brMedium,
-                      border: Border.all(color: colors.borderSubtle),
-                    ),
-                    child: DropdownButtonHideUnderline(
-                      child: DropdownButton<String?>(
-                        value: _selectedFairId,
-                        isExpanded: true,
-                        hint: const Text('Select Stall / Fair Location'),
-                        items: fairs
-                            .map(
-                              (f) => DropdownMenuItem<String?>(
-                                value: f.id,
-                                child: Text(f.name),
-                              ),
-                            )
-                            .toList(),
-                        onChanged: (val) {
-                          setState(() => _selectedFairId = val);
-                          if (val != null) {
-                            ref
-                                .read(posCartViewModelProvider.notifier)
-                                .init(fairId: val);
-                          }
-                        },
-                      ),
+                    child: AppDropdown<String?>(
+                      compact: true,
+                      value: _selectedFairId,
+                      hint: 'Select Stall / Fair Location',
+                      sheetTitle: 'Select Fair / Stall Location',
+                      sheetSubtitle: 'Choose active fair for sales counter',
+                      prefixIcon: const Icon(Icons.store_rounded, size: 20),
+                      items: fairs
+                          .map(
+                            (f) => DropdownMenuItem<String?>(
+                              value: f.id,
+                              child: Text(f.name),
+                            ),
+                          )
+                          .toList(),
+                      onChanged: (val) {
+                        setState(() => _selectedFairId = val);
+                        if (val != null) {
+                          ref
+                              .read(posCartViewModelProvider.notifier)
+                              .init(fairId: val);
+                        }
+                      },
                     ),
                   );
                 },
