@@ -17,6 +17,8 @@ void main() {
     Widget? sheetIcon,
     bool? searchable,
     String? actionButtonText,
+    bool? instantSelect,
+    bool compact = false,
   }) {
     return MaterialApp(
       theme: AppTheme.lightTheme,
@@ -42,6 +44,8 @@ void main() {
                   sheetIcon: sheetIcon,
                   searchable: searchable,
                   actionButtonText: actionButtonText,
+                  instantSelect: instantSelect,
+                  compact: compact,
                 ),
               );
             },
@@ -103,6 +107,7 @@ void main() {
           buildTestableDropdown<String>(
             label: 'Payment Method',
             value: 'Cash',
+            instantSelect: false,
             onChanged: (val) => selectedResult = val,
             items: const [
               DropdownMenuItem(value: 'Cash', child: Text('Cash')),
@@ -172,6 +177,7 @@ void main() {
           buildTestableDropdown<int>(
             label: 'Number of Partners / Investors',
             value: 1,
+            instantSelect: false,
             onChanged: (val) => chosenCount = val,
             items: const [
               DropdownMenuItem(
@@ -325,5 +331,83 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets(
+      'When instantSelect is active (default on <= 5 items), tapping an option card immediately confirms and dismisses sheet',
+      (tester) async {
+        tester.view.physicalSize = const Size(800, 1400);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(tester.view.resetPhysicalSize);
+
+        String? selectedResult;
+
+        await tester.pumpWidget(
+          buildTestableDropdown<String>(
+            label: 'Payment Method',
+            value: 'Cash',
+            onChanged: (val) => selectedResult = val,
+            items: const [
+              DropdownMenuItem(value: 'Cash', child: Text('Cash')),
+              DropdownMenuItem(value: 'UPI', child: Text('UPI')),
+              DropdownMenuItem(
+                value: 'Bank Transfer',
+                child: Text('Bank Transfer'),
+              ),
+              DropdownMenuItem(value: 'Other', child: Text('Other')),
+            ],
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Tap field to open sheet
+        await tester.tap(find.text('Cash'));
+        await tester.pumpAndSettle();
+
+        // Bottom sheet opened
+        expect(find.byType(AppDropdownSheet<String>), findsOneWidget);
+
+        // No bottom confirmation button is rendered in instantSelect mode
+        expect(find.text('Select Payment Method'), findsNothing);
+
+        // Single tap on UPI immediately confirms and dismisses
+        await tester.tap(find.text('UPI'));
+        await tester.pumpAndSettle();
+
+        // Sheet closed immediately and form field updated
+        expect(find.byType(AppDropdownSheet<String>), findsNothing);
+        expect(selectedResult, equals('UPI'));
+        expect(find.text('UPI'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'Compact trigger satisfies WCAG 2.5.5 touch target size with minHeight >= 48.0 dp',
+      (tester) async {
+        await tester.pumpWidget(
+          buildTestableDropdown<String>(
+            label: 'Compact Mode',
+            value: 'Opt1',
+            compact: true,
+            items: const [
+              DropdownMenuItem(value: 'Opt1', child: Text('Opt1')),
+              DropdownMenuItem(value: 'Opt2', child: Text('Opt2')),
+            ],
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Find the trigger Container (its decoration has brMedium)
+        final triggerFinder = find.byWidgetPredicate(
+          (widget) =>
+              widget is Container &&
+              widget.constraints != null &&
+              widget.constraints!.minHeight >= 48.0,
+        );
+        expect(triggerFinder, findsOneWidget);
+
+        final renderBox = tester.renderObject<RenderBox>(triggerFinder);
+        expect(renderBox.size.height, greaterThanOrEqualTo(48.0));
+      },
+    );
   });
 }

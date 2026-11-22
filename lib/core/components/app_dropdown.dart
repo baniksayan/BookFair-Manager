@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import '../../app/theme/app_radius.dart';
 import '../../app/theme/app_spacing.dart';
@@ -53,6 +54,7 @@ class AppDropdown<T> extends StatefulWidget {
     this.sheetIcon,
     this.searchable,
     this.actionButtonText,
+    this.instantSelect,
     this.compact = false,
   });
 
@@ -82,6 +84,11 @@ class AppDropdown<T> extends StatefulWidget {
 
   /// Custom label for the bottom confirmation button.
   final String? actionButtonText;
+
+  /// When true, tapping an item card immediately selects it and dismisses the sheet.
+  /// When false, tapping an item stages selection requiring the user to press the bottom action button.
+  /// Defaults to true when [items.length] <= 5, [searchable] is not true, and [actionButtonText] is null.
+  final bool? instantSelect;
 
   /// Compact presentation for filter bars and embedded table cells.
   final bool compact;
@@ -133,6 +140,7 @@ class _AppDropdownState<T> extends State<AppDropdown<T>> {
     final selected = await showModalBottomSheet<T>(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: Colors.transparent,
       builder: (sheetContext) {
         return AppDropdownSheet<T>(
@@ -143,6 +151,7 @@ class _AppDropdownState<T> extends State<AppDropdown<T>> {
           headerIcon: widget.sheetIcon,
           searchable: widget.searchable,
           actionButtonText: widget.actionButtonText,
+          instantSelect: widget.instantSelect,
         );
       },
     );
@@ -175,10 +184,10 @@ class _AppDropdownState<T> extends State<AppDropdown<T>> {
         final prefixWidget = _extractPrefixIcon(selectedItem);
 
         Widget triggerBox = Container(
-          constraints: BoxConstraints(minHeight: widget.compact ? 42.0 : 54.0),
+          constraints: BoxConstraints(minHeight: widget.compact ? 48.0 : 54.0),
           padding: EdgeInsets.symmetric(
             horizontal: widget.compact ? AppSpacing.s12 : AppSpacing.s16,
-            vertical: widget.compact ? AppSpacing.s8 : AppSpacing.s14,
+            vertical: widget.compact ? AppSpacing.s10 : AppSpacing.s14,
           ),
           decoration: BoxDecoration(
             color: colors.surface,
@@ -297,6 +306,7 @@ class AppDropdownSheet<T> extends StatefulWidget {
     this.headerIcon,
     this.searchable,
     this.actionButtonText,
+    this.instantSelect,
   });
 
   final List<DropdownMenuItem<T>> items;
@@ -306,6 +316,7 @@ class AppDropdownSheet<T> extends StatefulWidget {
   final Widget? headerIcon;
   final bool? searchable;
   final String? actionButtonText;
+  final bool? instantSelect;
 
   @override
   State<AppDropdownSheet<T>> createState() => _AppDropdownSheetState<T>();
@@ -315,6 +326,19 @@ class _AppDropdownSheetState<T> extends State<AppDropdownSheet<T>> {
   late T? _tempSelectedValue;
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
+
+  bool get _isInstantSelect {
+    if (widget.instantSelect != null) return widget.instantSelect!;
+    if (widget.actionButtonText != null &&
+        widget.actionButtonText!.isNotEmpty) {
+      return false;
+    }
+    final isSearchable = widget.searchable ?? (widget.items.length > 5);
+    if (isSearchable) {
+      return false;
+    }
+    return widget.items.length <= 5;
+  }
 
   @override
   void initState() {
@@ -413,385 +437,403 @@ class _AppDropdownSheetState<T> extends State<AppDropdownSheet<T>> {
       return labelMatch || subtitleMatch;
     }).toList();
 
-    return Container(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.88,
-      ),
-      decoration: BoxDecoration(
-        color: colors.surface,
-        borderRadius: AppRadius.brTopExtraLarge,
-        border: Border(
-          top: BorderSide(
-            color: colors.border.withValues(alpha: 0.6),
-            width: 1.5,
-          ),
-          left: BorderSide(
-            color: colors.border.withValues(alpha: 0.6),
-            width: 1.0,
-          ),
-          right: BorderSide(
-            color: colors.border.withValues(alpha: 0.6),
-            width: 1.0,
+    final bottomInset = MediaQuery.of(context).viewInsets.bottom;
+
+    return Padding(
+      padding: EdgeInsets.only(bottom: bottomInset),
+      child: Container(
+        constraints: BoxConstraints(
+          maxHeight: MediaQuery.of(context).size.height * 0.88,
+        ),
+        decoration: BoxDecoration(
+          color: colors.surface,
+          borderRadius: AppRadius.brTopExtraLarge,
+          border: Border(
+            top: BorderSide(
+              color: colors.border.withValues(alpha: 0.6),
+              width: 1.5,
+            ),
+            left: BorderSide(
+              color: colors.border.withValues(alpha: 0.6),
+              width: 1.0,
+            ),
+            right: BorderSide(
+              color: colors.border.withValues(alpha: 0.6),
+              width: 1.0,
+            ),
           ),
         ),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Top Drag Handle Pill
-            Center(
-              child: Container(
-                margin: const EdgeInsets.only(top: AppSpacing.s12),
-                width: 40.0,
-                height: 4.0,
-                decoration: BoxDecoration(
-                  color: colors.border.withValues(alpha: 0.8),
-                  borderRadius: AppRadius.brFull,
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              // Top Drag Handle Pill
+              Center(
+                child: Container(
+                  margin: const EdgeInsets.only(top: AppSpacing.s12),
+                  width: 40.0,
+                  height: 4.0,
+                  decoration: BoxDecoration(
+                    color: colors.border.withValues(alpha: 0.8),
+                    borderRadius: AppRadius.brFull,
+                  ),
                 ),
               ),
-            ),
 
-            // Header Section with Rounded Leading Icon Container
-            Padding(
-              padding: const EdgeInsets.fromLTRB(
-                AppSpacing.s20,
-                AppSpacing.s14,
-                AppSpacing.s16,
-                AppSpacing.s10,
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 44.0,
-                    height: 44.0,
-                    decoration: BoxDecoration(
-                      color: Color.alphaBlend(
-                        colors.primary.withValues(
-                          alpha: colors.isDark ? 0.22 : 0.08,
-                        ),
-                        colors.surface,
-                      ),
-                      borderRadius: AppRadius.brMedium,
-                      border: Border.all(
-                        color: colors.primary.withValues(
-                          alpha: colors.isDark ? 0.35 : 0.18,
-                        ),
-                        width: 1.0,
-                      ),
-                    ),
-                    child: Center(child: _buildHeaderIcon(context)),
-                  ),
-                  AppSpacing.gapW12,
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          cleanTitle,
-                          style: textTheme.titleLarge?.copyWith(
-                            fontFamily: 'Georgia',
-                            fontWeight: FontWeight.w700,
-                            color: colors.textPrimary,
-                          ),
-                        ),
-                        if (cleanSubtitle.isNotEmpty) ...[
-                          AppSpacing.gapH2,
-                          Text(
-                            cleanSubtitle,
-                            style: textTheme.bodySmall?.copyWith(
-                              color: colors.textSecondary,
-                              fontSize: 12.0,
-                            ),
-                          ),
-                        ],
-                      ],
-                    ),
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.close_rounded,
-                      color: colors.textSecondary,
-                      size: 22.0,
-                    ),
-                    onPressed: () => Navigator.of(context).pop(),
-                  ),
-                ],
-              ),
-            ),
-
-            // Real-time Search Input Field (when searchable or >5 items)
-            if (isSearchable)
+              // Header Section with Rounded Leading Icon Container
               Padding(
                 padding: const EdgeInsets.fromLTRB(
-                  AppSpacing.s16,
-                  AppSpacing.s4,
+                  AppSpacing.s20,
+                  AppSpacing.s14,
                   AppSpacing.s16,
                   AppSpacing.s10,
                 ),
-                child: TextField(
-                  controller: _searchController,
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: colors.textPrimary,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: 'Search ${cleanTitle.toLowerCase()}...',
-                    hintStyle: textTheme.bodyMedium?.copyWith(
-                      color: colors.disabled,
-                    ),
-                    prefixIcon: Icon(
-                      Icons.search_rounded,
-                      color: colors.textSecondary,
-                      size: 20.0,
-                    ),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear_rounded, size: 18.0),
-                            onPressed: () {
-                              _searchController.clear();
-                            },
-                          )
-                        : null,
-                    filled: true,
-                    fillColor: Color.alphaBlend(
-                      colors.primary.withValues(
-                        alpha: colors.isDark ? 0.12 : 0.04,
-                      ),
-                      colors.surface,
-                    ),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.s14,
-                      vertical: AppSpacing.s10,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: AppRadius.brMedium,
-                      borderSide: BorderSide(
-                        color: colors.border.withValues(
-                          alpha: colors.isDark ? 0.35 : 0.6,
+                child: Row(
+                  children: [
+                    Container(
+                      width: 44.0,
+                      height: 44.0,
+                      decoration: BoxDecoration(
+                        color: Color.alphaBlend(
+                          colors.primary.withValues(
+                            alpha: colors.isDark ? 0.22 : 0.08,
+                          ),
+                          colors.surface,
+                        ),
+                        borderRadius: AppRadius.brMedium,
+                        border: Border.all(
+                          color: colors.primary.withValues(
+                            alpha: colors.isDark ? 0.35 : 0.18,
+                          ),
+                          width: 1.0,
                         ),
                       ),
+                      child: Center(child: _buildHeaderIcon(context)),
                     ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: AppRadius.brMedium,
-                      borderSide: BorderSide(
-                        color: colors.border.withValues(
-                          alpha: colors.isDark ? 0.35 : 0.6,
-                        ),
-                      ),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: AppRadius.brMedium,
-                      borderSide: BorderSide(color: colors.primary, width: 1.5),
-                    ),
-                  ),
-                ),
-              ),
-
-            const Divider(height: 1.0),
-
-            // Option Cards List
-            Flexible(
-              child: filteredItems.isEmpty
-                  ? Padding(
-                      padding: AppSpacing.insetAll32,
-                      child: Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.search_off_rounded,
-                              size: 40.0,
-                              color: colors.disabled,
+                    AppSpacing.gapW12,
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            cleanTitle,
+                            style: textTheme.titleLarge?.copyWith(
+                              fontFamily: 'Georgia',
+                              fontWeight: FontWeight.w700,
+                              color: colors.textPrimary,
                             ),
-                            AppSpacing.gapH8,
+                          ),
+                          if (cleanSubtitle.isNotEmpty) ...[
+                            AppSpacing.gapH2,
                             Text(
-                              'No matching options found',
-                              style: textTheme.bodyMedium?.copyWith(
+                              cleanSubtitle,
+                              style: textTheme.bodySmall?.copyWith(
                                 color: colors.textSecondary,
-                                fontWeight: FontWeight.w600,
+                                fontSize: 12.0,
                               ),
                             ),
                           ],
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(
+                        Icons.close_rounded,
+                        color: colors.textSecondary,
+                        size: 22.0,
+                      ),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                ),
+              ),
+
+              // Real-time Search Input Field (when searchable or >5 items)
+              if (isSearchable)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(
+                    AppSpacing.s16,
+                    AppSpacing.s4,
+                    AppSpacing.s16,
+                    AppSpacing.s10,
+                  ),
+                  child: TextField(
+                    controller: _searchController,
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colors.textPrimary,
+                    ),
+                    decoration: InputDecoration(
+                      hintText: 'Search ${cleanTitle.toLowerCase()}...',
+                      hintStyle: textTheme.bodyMedium?.copyWith(
+                        color: colors.disabled,
+                      ),
+                      prefixIcon: Icon(
+                        Icons.search_rounded,
+                        color: colors.textSecondary,
+                        size: 20.0,
+                      ),
+                      suffixIcon: _searchQuery.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear_rounded, size: 18.0),
+                              onPressed: () {
+                                _searchController.clear();
+                              },
+                            )
+                          : null,
+                      filled: true,
+                      fillColor: Color.alphaBlend(
+                        colors.primary.withValues(
+                          alpha: colors.isDark ? 0.12 : 0.04,
+                        ),
+                        colors.surface,
+                      ),
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: AppSpacing.s14,
+                        vertical: AppSpacing.s10,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: AppRadius.brMedium,
+                        borderSide: BorderSide(
+                          color: colors.border.withValues(
+                            alpha: colors.isDark ? 0.35 : 0.6,
+                          ),
                         ),
                       ),
-                    )
-                  : ListView.separated(
-                      shrinkWrap: true,
-                      padding: AppSpacing.insetAll16,
-                      itemCount: filteredItems.length,
-                      separatorBuilder: (context, index) => AppSpacing.gapH10,
-                      itemBuilder: (context, index) {
-                        final meta = filteredItems[index];
-                        final isSelected =
-                            meta.item.value == _tempSelectedValue;
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: AppRadius.brMedium,
+                        borderSide: BorderSide(
+                          color: colors.border.withValues(
+                            alpha: colors.isDark ? 0.35 : 0.6,
+                          ),
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: AppRadius.brMedium,
+                        borderSide: BorderSide(
+                          color: colors.primary,
+                          width: 1.5,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
 
-                        final leadingIconWidget =
-                            meta.icon ??
-                            (meta.iconData != null
-                                ? Icon(
-                                    meta.iconData,
-                                    size: 20.0,
-                                    color: colors.primary,
-                                  )
-                                : Icon(
-                                    Icons.label_outline_rounded,
-                                    size: 20.0,
-                                    color: colors.primary,
-                                  ));
+              const Divider(height: 1.0),
 
-                        return InkWell(
-                          onTap: () {
-                            setState(() {
-                              _tempSelectedValue = meta.item.value;
-                            });
-                          },
-                          borderRadius: AppRadius.brLarge,
-                          child: AnimatedContainer(
-                            duration: const Duration(milliseconds: 150),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppSpacing.s16,
-                              vertical: AppSpacing.s12,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isSelected
-                                  ? Color.alphaBlend(
-                                      colors.primary.withValues(
-                                        alpha: colors.isDark ? 0.22 : 0.08,
-                                      ),
-                                      colors.surface,
-                                    )
-                                  : colors.surface,
-                              borderRadius: AppRadius.brLarge,
-                              border: Border.all(
-                                color: isSelected
-                                    ? colors.primary
-                                    : colors.border.withValues(
-                                        alpha: colors.isDark ? 0.35 : 0.5,
-                                      ),
-                                width: isSelected ? 1.5 : 1.0,
+              // Option Cards List
+              Flexible(
+                child: filteredItems.isEmpty
+                    ? Padding(
+                        padding: AppSpacing.insetAll32,
+                        child: Center(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.search_off_rounded,
+                                size: 40.0,
+                                color: colors.disabled,
                               ),
-                              boxShadow: isSelected
-                                  ? [
-                                      BoxShadow(
-                                        color: colors.primary.withValues(
-                                          alpha: colors.isDark ? 0.3 : 0.12,
-                                        ),
-                                        blurRadius: 6.0,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ]
-                                  : [
-                                      BoxShadow(
-                                        color: Colors.black.withValues(
-                                          alpha: colors.isDark ? 0.15 : 0.03,
-                                        ),
-                                        blurRadius: 3.0,
-                                        offset: const Offset(0, 1),
-                                      ),
-                                    ],
-                            ),
-                            child: Row(
-                              children: [
-                                // Left Icon Box
-                                Container(
-                                  width: 40.0,
-                                  height: 40.0,
-                                  decoration: BoxDecoration(
-                                    color: Color.alphaBlend(
-                                      colors.primary.withValues(
-                                        alpha: isSelected ? 0.18 : 0.07,
-                                      ),
-                                      colors.surface,
-                                    ),
-                                    borderRadius: AppRadius.brMedium,
-                                  ),
-                                  child: Center(child: leadingIconWidget),
+                              AppSpacing.gapH8,
+                              Text(
+                                'No matching options found',
+                                style: textTheme.bodyMedium?.copyWith(
+                                  color: colors.textSecondary,
+                                  fontWeight: FontWeight.w600,
                                 ),
-                                AppSpacing.gapW12,
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : ListView.separated(
+                        shrinkWrap: true,
+                        padding: AppSpacing.insetAll16,
+                        itemCount: filteredItems.length,
+                        separatorBuilder: (context, index) => AppSpacing.gapH10,
+                        itemBuilder: (context, index) {
+                          final meta = filteredItems[index];
+                          final isSelected =
+                              meta.item.value == _tempSelectedValue;
 
-                                // Title & Subtitle
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        meta.label,
-                                        style: textTheme.titleSmall?.copyWith(
-                                          fontWeight: isSelected
-                                              ? FontWeight.w700
-                                              : FontWeight.w600,
-                                          color: colors.textPrimary,
+                          final leadingIconWidget =
+                              meta.icon ??
+                              (meta.iconData != null
+                                  ? Icon(
+                                      meta.iconData,
+                                      size: 20.0,
+                                      color: colors.primary,
+                                    )
+                                  : Icon(
+                                      Icons.label_outline_rounded,
+                                      size: 20.0,
+                                      color: colors.primary,
+                                    ));
+
+                          return InkWell(
+                            onTap: () {
+                              HapticFeedback.selectionClick();
+                              if (_isInstantSelect) {
+                                Navigator.of(context).pop(meta.item.value);
+                              } else {
+                                setState(() {
+                                  _tempSelectedValue = meta.item.value;
+                                });
+                              }
+                            },
+                            borderRadius: AppRadius.brLarge,
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 150),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: AppSpacing.s16,
+                                vertical: AppSpacing.s12,
+                              ),
+                              decoration: BoxDecoration(
+                                color: isSelected
+                                    ? Color.alphaBlend(
+                                        colors.primary.withValues(
+                                          alpha: colors.isDark ? 0.22 : 0.08,
                                         ),
-                                      ),
-                                      if (meta.subtitle != null &&
-                                          meta.subtitle!.isNotEmpty) ...[
-                                        AppSpacing.gapH2,
-                                        Text(
-                                          meta.subtitle!,
-                                          style: textTheme.bodySmall?.copyWith(
-                                            color: colors.textSecondary,
-                                            fontSize: 12.0,
+                                        colors.surface,
+                                      )
+                                    : colors.surface,
+                                borderRadius: AppRadius.brLarge,
+                                border: Border.all(
+                                  color: isSelected
+                                      ? colors.primary
+                                      : colors.border.withValues(
+                                          alpha: colors.isDark ? 0.35 : 0.5,
+                                        ),
+                                  width: isSelected ? 1.5 : 1.0,
+                                ),
+                                boxShadow: isSelected
+                                    ? [
+                                        BoxShadow(
+                                          color: colors.primary.withValues(
+                                            alpha: colors.isDark ? 0.3 : 0.12,
                                           ),
+                                          blurRadius: 6.0,
+                                          offset: const Offset(0, 2),
+                                        ),
+                                      ]
+                                    : [
+                                        BoxShadow(
+                                          color: Colors.black.withValues(
+                                            alpha: colors.isDark ? 0.15 : 0.03,
+                                          ),
+                                          blurRadius: 3.0,
+                                          offset: const Offset(0, 1),
                                         ),
                                       ],
-                                    ],
-                                  ),
-                                ),
-
-                                // Right Selection Indicator
-                                if (isSelected)
+                              ),
+                              child: Row(
+                                children: [
+                                  // Left Icon Box
                                   Container(
-                                    width: 22.0,
-                                    height: 22.0,
+                                    width: 40.0,
+                                    height: 40.0,
                                     decoration: BoxDecoration(
-                                      color: colors.primary,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Center(
-                                      child: Icon(
-                                        Icons.check_rounded,
-                                        color: Colors.white,
-                                        size: 14.0,
-                                      ),
-                                    ),
-                                  )
-                                else
-                                  Container(
-                                    width: 22.0,
-                                    height: 22.0,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      border: Border.all(
-                                        color: colors.border.withValues(
-                                          alpha: 0.6,
+                                      color: Color.alphaBlend(
+                                        colors.primary.withValues(
+                                          alpha: isSelected ? 0.18 : 0.07,
                                         ),
-                                        width: 1.5,
+                                        colors.surface,
                                       ),
+                                      borderRadius: AppRadius.brMedium,
+                                    ),
+                                    child: Center(child: leadingIconWidget),
+                                  ),
+                                  AppSpacing.gapW12,
+
+                                  // Title & Subtitle
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          meta.label,
+                                          style: textTheme.titleSmall?.copyWith(
+                                            fontWeight: isSelected
+                                                ? FontWeight.w700
+                                                : FontWeight.w600,
+                                            color: colors.textPrimary,
+                                          ),
+                                        ),
+                                        if (meta.subtitle != null &&
+                                            meta.subtitle!.isNotEmpty) ...[
+                                          AppSpacing.gapH2,
+                                          Text(
+                                            meta.subtitle!,
+                                            style: textTheme.bodySmall
+                                                ?.copyWith(
+                                                  color: colors.textSecondary,
+                                                  fontSize: 12.0,
+                                                ),
+                                          ),
+                                        ],
+                                      ],
                                     ),
                                   ),
-                              ],
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-            ),
 
-            // Bottom Confirmation Button
-            Padding(
-              padding: AppSpacing.insetAll16,
-              child: AppButton(
-                text: actionBtnText,
-                isFullWidth: true,
-                onPressed: () {
-                  Navigator.of(context).pop(_tempSelectedValue);
-                },
+                                  // Right Selection Indicator
+                                  if (isSelected)
+                                    Container(
+                                      width: 22.0,
+                                      height: 22.0,
+                                      decoration: BoxDecoration(
+                                        color: colors.primary,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: const Center(
+                                        child: Icon(
+                                          Icons.check_rounded,
+                                          color: Colors.white,
+                                          size: 14.0,
+                                        ),
+                                      ),
+                                    )
+                                  else
+                                    Container(
+                                      width: 22.0,
+                                      height: 22.0,
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        border: Border.all(
+                                          color: colors.border.withValues(
+                                            alpha: 0.6,
+                                          ),
+                                          width: 1.5,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
               ),
-            ),
-          ],
+
+              // Bottom Confirmation Button (only when 2-step confirmation is active)
+              if (!_isInstantSelect)
+                Padding(
+                  padding: AppSpacing.insetAll16,
+                  child: AppButton(
+                    text: actionBtnText,
+                    isFullWidth: true,
+                    onPressed: () {
+                      HapticFeedback.selectionClick();
+                      Navigator.of(context).pop(_tempSelectedValue);
+                    },
+                  ),
+                )
+              else
+                const SizedBox(height: AppSpacing.s12),
+            ],
+          ),
         ),
       ),
     );
