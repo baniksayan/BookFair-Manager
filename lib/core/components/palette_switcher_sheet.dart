@@ -136,6 +136,10 @@ class _PaletteSwitcherSheetState extends ConsumerState<PaletteSwitcherSheet> {
                     final isPreviewSelected = _selectedPalette.id == palette.id;
                     final isCurrentlyActive =
                         currentActivePalette.id == palette.id;
+                    final paletteScheme = colors.isDark
+                        ? palette.darkScheme
+                        : palette.lightScheme;
+                    final accentColor = paletteScheme.primary;
 
                     return InkWell(
                       onTap: () {
@@ -148,15 +152,41 @@ class _PaletteSwitcherSheetState extends ConsumerState<PaletteSwitcherSheet> {
                         padding: AppSpacing.insetAll16,
                         decoration: BoxDecoration(
                           color: isPreviewSelected
-                              ? colors.surfaceSecondary
+                              ? Color.alphaBlend(
+                                  accentColor.withValues(
+                                    alpha: colors.isDark ? 0.20 : 0.07,
+                                  ),
+                                  colors.surface,
+                                )
                               : colors.surface,
                           borderRadius: AppRadius.brLarge,
                           border: Border.all(
                             color: isPreviewSelected
-                                ? colors.primary
-                                : colors.border,
+                                ? accentColor
+                                : colors.border.withValues(
+                                    alpha: colors.isDark ? 0.35 : 0.6,
+                                  ),
                             width: isPreviewSelected ? 2.0 : 1.0,
                           ),
+                          boxShadow: isPreviewSelected
+                              ? [
+                                  BoxShadow(
+                                    color: accentColor.withValues(
+                                      alpha: colors.isDark ? 0.35 : 0.14,
+                                    ),
+                                    blurRadius: 8.0,
+                                    offset: const Offset(0, 2),
+                                  ),
+                                ]
+                              : [
+                                  BoxShadow(
+                                    color: Colors.black.withValues(
+                                      alpha: colors.isDark ? 0.15 : 0.03,
+                                    ),
+                                    blurRadius: 4.0,
+                                    offset: const Offset(0, 1),
+                                  ),
+                                ],
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -172,8 +202,10 @@ class _PaletteSwitcherSheetState extends ConsumerState<PaletteSwitcherSheet> {
                                           : Icons.radio_button_off_rounded,
                                       size: 20.0,
                                       color: isPreviewSelected
-                                          ? colors.primary
-                                          : colors.textSecondary,
+                                          ? accentColor
+                                          : colors.textSecondary.withValues(
+                                              alpha: 0.7,
+                                            ),
                                     ),
                                     AppSpacing.gapW8,
                                     Text(
@@ -192,13 +224,50 @@ class _PaletteSwitcherSheetState extends ConsumerState<PaletteSwitcherSheet> {
                                       vertical: AppSpacing.s4,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: colors.primary,
+                                      gradient: colors.primaryGradient,
                                       borderRadius: AppRadius.brSmall,
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color: colors.primary.withValues(
+                                            alpha: 0.3,
+                                          ),
+                                          blurRadius: 4.0,
+                                          offset: const Offset(0, 1),
+                                        ),
+                                      ],
                                     ),
                                     child: Text(
                                       'ACTIVE',
                                       style: TextStyle(
                                         color: colors.onPrimary,
+                                        fontSize: 10.0,
+                                        fontWeight: FontWeight.w800,
+                                        letterSpacing: 0.5,
+                                      ),
+                                    ),
+                                  )
+                                else if (isPreviewSelected)
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: AppSpacing.s8,
+                                      vertical: AppSpacing.s4,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: accentColor.withValues(
+                                        alpha: colors.isDark ? 0.25 : 0.12,
+                                      ),
+                                      borderRadius: AppRadius.brSmall,
+                                      border: Border.all(
+                                        color: accentColor,
+                                        width: 1.0,
+                                      ),
+                                    ),
+                                    child: Text(
+                                      'SELECTED',
+                                      style: TextStyle(
+                                        color: colors.isDark
+                                            ? paletteScheme.textPrimary
+                                            : accentColor,
                                         fontSize: 10.0,
                                         fontWeight: FontWeight.w800,
                                         letterSpacing: 0.5,
@@ -251,7 +320,9 @@ class _PaletteSwitcherSheetState extends ConsumerState<PaletteSwitcherSheet> {
                                     color: AppPalette.neutralBlack,
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: colors.border,
+                                      color: colors.border.withValues(
+                                        alpha: 0.7,
+                                      ),
                                       width: 1.0,
                                     ),
                                   ),
@@ -264,7 +335,9 @@ class _PaletteSwitcherSheetState extends ConsumerState<PaletteSwitcherSheet> {
                                     color: AppPalette.neutralWhite,
                                     shape: BoxShape.circle,
                                     border: Border.all(
-                                      color: colors.border,
+                                      color: colors.border.withValues(
+                                        alpha: 0.7,
+                                      ),
                                       width: 1.0,
                                     ),
                                   ),
@@ -297,12 +370,10 @@ class _PaletteSwitcherSheetState extends ConsumerState<PaletteSwitcherSheet> {
                         text: 'Apply Theme',
                         icon: Icons.check_rounded,
                         onPressed: () async {
+                          Navigator.of(context).pop();
                           await ref
                               .read(themeControllerProvider.notifier)
                               .setPalette(_selectedPalette);
-                          if (context.mounted) {
-                            Navigator.of(context).pop();
-                          }
                         },
                       ),
                     ),

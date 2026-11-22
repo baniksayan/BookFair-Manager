@@ -83,6 +83,7 @@ class QuickActionsSection extends StatelessWidget {
                   return AppCard.interactive(
                     onTap: action.onTap,
                     padding: AppSpacing.insetAll12,
+                    gradient: colors.cardGradient,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

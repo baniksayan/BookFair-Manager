@@ -96,7 +96,7 @@ class AppCard extends StatelessWidget {
     Widget cardInner = Container(
       padding: padding,
       decoration: BoxDecoration(
-        color: Colors.transparent,
+        color: null,
         gradient: gradient,
         borderRadius: radius,
         border: borderSide,

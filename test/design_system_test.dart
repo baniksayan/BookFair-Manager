@@ -78,6 +78,13 @@ void main() {
               'Light token 0x${color.toARGB32().toRadixString(16)} must be approved',
         );
       }
+
+      // Ensure light mode secondary surface is never a dark/inverted color
+      expect(
+        light.surfaceSecondary.computeLuminance(),
+        greaterThan(0.70),
+        reason: 'Light mode surfaceSecondary must be high-luminance to prevent dark-on-dark UI defects',
+      );
     });
 
     test('All semantic tokens in Dark Mode use approved palette colors', () {
@@ -195,5 +202,80 @@ void main() {
 
       expect(find.text('SAMPLE DATA'), findsOneWidget);
     });
+
+    testWidgets(
+      'DEF-001 GPU fix: AppCard with gradient leaves BoxDecoration color null to prevent shader clearing',
+      (tester) async {
+        const testGradient = LinearGradient(
+          colors: [Color(0xFF370617), Color(0xFF6A040F)],
+        );
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.lightTheme,
+            home: const Scaffold(
+              body: Center(
+                child: AppCard(
+                  gradient: testGradient,
+                  child: Text('Gradient Card'),
+                ),
+              ),
+            ),
+          ),
+        );
+
+        expect(find.text('Gradient Card'), findsOneWidget);
+
+        // Find Container inside AppCard
+        final containerFinder = find.descendant(
+          of: find.byType(AppCard),
+          matching: find.byType(Container),
+        );
+        expect(containerFinder, findsOneWidget);
+
+        final container = tester.widget<Container>(containerFinder);
+        final decoration = container.decoration as BoxDecoration?;
+        expect(decoration, isNotNull);
+        expect(
+          decoration!.color,
+          isNull,
+          reason: 'color must be null when gradient is present so GPU rasterizer does not multiply shader by 0 alpha',
+        );
+        expect(decoration.gradient, equals(testGradient));
+      },
+    );
+
+    testWidgets(
+      'AppCard without gradient sets Material color to surface background and leaves BoxDecoration color null',
+      (tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.lightTheme,
+            home: const Scaffold(
+              body: Center(child: AppCard(child: Text('Standard Card'))),
+            ),
+          ),
+        );
+
+        expect(find.text('Standard Card'), findsOneWidget);
+
+        final containerFinder = find.descendant(
+          of: find.byType(AppCard),
+          matching: find.byType(Container),
+        );
+        final container = tester.widget<Container>(containerFinder);
+        final decoration = container.decoration as BoxDecoration?;
+        expect(decoration, isNotNull);
+        expect(decoration!.color, isNull);
+        expect(decoration.gradient, isNull);
+
+        final materialFinder = find.descendant(
+          of: find.byType(AppCard),
+          matching: find.byType(Material),
+        );
+        final material = tester.widget<Material>(materialFinder);
+        expect(material.color, equals(AppTheme.lightTheme.colorScheme.surface));
+      },
+    );
   });
 }

@@ -109,15 +109,31 @@ class AppButton extends StatelessWidget {
       ],
     );
 
+    final isPrimaryActive = variant == AppButtonVariant.primary && _isEnabled;
+    final isSecondaryActive =
+        variant == AppButtonVariant.secondary && _isEnabled;
+
     final buttonWidget = AnimatedContainer(
       duration: const Duration(milliseconds: 150),
       height: height,
       padding: padding,
       decoration: BoxDecoration(
-        color: bgColor,
+        color: isPrimaryActive || isSecondaryActive ? null : bgColor,
+        gradient: isPrimaryActive
+            ? colors.primaryGradient
+            : (isSecondaryActive ? colors.accentGradient : null),
         borderRadius: AppRadius.brMedium,
         border: borderColor != null
             ? Border.all(color: borderColor, width: 1.5)
+            : null,
+        boxShadow: isPrimaryActive
+            ? [
+                BoxShadow(
+                  color: colors.primary.withValues(alpha: 0.25),
+                  blurRadius: 6.0,
+                  offset: const Offset(0, 2),
+                ),
+              ]
             : null,
       ),
       child: Center(child: content),

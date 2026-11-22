@@ -38,10 +38,10 @@ class DashboardHeroCard extends StatelessWidget {
                   vertical: AppSpacing.s4,
                 ),
                 decoration: BoxDecoration(
-                  color: colors.surface.withValues(alpha: 0.25),
+                  color: Colors.black.withValues(alpha: 0.25),
                   borderRadius: AppRadius.brSmall,
                   border: Border.all(
-                    color: badgeAccent.withValues(alpha: 0.6),
+                    color: badgeAccent.withValues(alpha: 0.8),
                     width: 1.0,
                   ),
                 ),

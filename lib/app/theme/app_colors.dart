@@ -55,7 +55,7 @@ abstract final class AppColors {
     accent: cF48C06,
     background: cFFFFFF,
     surface: cFFFFFF,
-    surfaceSecondary: c370617,
+    surfaceSecondary: cFFFFFF,
     textPrimary: c03071E,
     textSecondary: c6A040F,
     border: cE85D04,
@@ -202,7 +202,7 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
         end: Alignment.bottomRight,
         colors: isDark
             ? [surface, surfaceSecondary.withValues(alpha: 0.5)]
-            : [surface, surfaceSecondary.withValues(alpha: 0.25)],
+            : [surface, primary.withValues(alpha: 0.04)],
       );
 
   /// Vibrant gradient for secondary accents and badges.

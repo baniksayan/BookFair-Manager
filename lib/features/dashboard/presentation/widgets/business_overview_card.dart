@@ -61,6 +61,7 @@ class BusinessOverviewSection extends StatelessWidget {
               onTap: () =>
                   context.push('/book-fairs/${summary.activeFair!.id}'),
               padding: AppSpacing.insetAll16,
+              gradient: colors.cardGradient,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
