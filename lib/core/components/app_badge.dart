@@ -75,11 +75,7 @@ class AppBadge extends StatelessWidget {
       case AppBadgeVariant.neutral:
         return (colors.surface, colors.textSecondary, colors.border);
       case AppBadgeVariant.primary:
-        return (
-          colors.primary,
-          colors.isDark ? AppColors.c03071E : AppColors.cFFFFFF,
-          colors.primary,
-        );
+        return (colors.primary, colors.onPrimary, colors.primary);
       case AppBadgeVariant.success:
         return (colors.surface, colors.success, colors.success);
       case AppBadgeVariant.warning:

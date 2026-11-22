@@ -78,11 +78,11 @@ class _AppSearchBarState extends State<AppSearchBar> {
         style: textTheme.bodyMedium?.copyWith(color: colors.textPrimary),
         decoration: InputDecoration(
           hintText: widget.hint,
-          hintStyle: textTheme.bodyMedium?.copyWith(color: colors.disabled),
+          hintStyle: textTheme.bodyMedium?.copyWith(color: colors.hint),
           prefixIcon: Icon(
             Icons.search_rounded,
             size: 20.0,
-            color: colors.textSecondary,
+            color: colors.primary,
           ),
           suffixIcon: _showClear
               ? IconButton(

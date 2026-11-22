@@ -58,14 +58,19 @@ abstract final class AppColors {
     surfaceSecondary: c370617,
     textPrimary: c03071E,
     textSecondary: c6A040F,
-    border: cFAA307,
-    divider: cFAA307,
+    border: cE85D04,
+    divider: cE85D04,
     success: cFAA307,
     warning: cF48C06,
     error: cD00000,
     info: cDC2F02,
     disabled: cFFBA08,
     isDark: false,
+    customHeroGradient: LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [c370617, c6A040F, c9D0208],
+    ),
   );
 
   /// Dark theme semantic color configuration
@@ -79,14 +84,19 @@ abstract final class AppColors {
     surfaceSecondary: c6A040F,
     textPrimary: cFFFFFF,
     textSecondary: cFFBA08,
-    border: c6A040F,
-    divider: c6A040F,
+    border: cDC2F02,
+    divider: cDC2F02,
     success: cFFBA08,
     warning: cFAA307,
     error: cD00000,
     info: cE85D04,
     disabled: c6A040F,
     isDark: true,
+    customHeroGradient: LinearGradient(
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+      colors: [c370617, c6A040F, c03071E],
+    ),
   );
 }
 
@@ -111,6 +121,10 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     required this.info,
     required this.disabled,
     required this.isDark,
+    this.customHeroGradient,
+    this.customPrimaryGradient,
+    this.customCardGradient,
+    this.customAccentGradient,
   });
 
   final Color primary;
@@ -130,6 +144,10 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
   final Color info;
   final Color disabled;
   final bool isDark;
+  final LinearGradient? customHeroGradient;
+  final LinearGradient? customPrimaryGradient;
+  final LinearGradient? customCardGradient;
+  final LinearGradient? customAccentGradient;
 
   // Convenience aliases strictly mapping to approved tokens
   Color get surfaceContainer => surface;
@@ -138,6 +156,63 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
   Color get borderSubtle => border;
   Color get onSurface => textPrimary;
   Color get onSurfaceMuted => textSecondary;
+
+  /// High-contrast foreground color on top of [primary].
+  Color get onPrimary =>
+      ThemeData.estimateBrightnessForColor(primary) == Brightness.dark
+      ? AppColors.cFFFFFF
+      : (isDark ? background : textPrimary);
+
+  /// High-contrast foreground color on top of [secondary].
+  Color get onSecondary =>
+      ThemeData.estimateBrightnessForColor(secondary) == Brightness.dark
+      ? AppColors.cFFFFFF
+      : (isDark ? background : textPrimary);
+
+  /// High-contrast hint / placeholder text color.
+  Color get hint => isDark
+      ? textSecondary.withValues(alpha: 0.85)
+      : textSecondary.withValues(alpha: 0.8);
+
+  /// Dynamic gradient for primary actions, buttons, and highlights.
+  LinearGradient get primaryGradient =>
+      customPrimaryGradient ??
+      LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [primaryDark, primary],
+      );
+
+  /// Rich, dark, jewel-tone gradient for Hero banners with guaranteed >= 7:1 AAA contrast for white text.
+  LinearGradient get heroGradient =>
+      customHeroGradient ??
+      LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: isDark
+            ? [surfaceSecondary, primaryDark, background]
+            : [primaryDark, primary, secondary],
+      );
+
+  /// Subtle branded gradient for card containers and elevated sections.
+  LinearGradient get cardGradient =>
+      customCardGradient ??
+      LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: isDark
+            ? [surface, surfaceSecondary.withValues(alpha: 0.5)]
+            : [surface, surfaceSecondary.withValues(alpha: 0.25)],
+      );
+
+  /// Vibrant gradient for secondary accents and badges.
+  LinearGradient get accentGradient =>
+      customAccentGradient ??
+      LinearGradient(
+        begin: Alignment.topLeft,
+        end: Alignment.bottomRight,
+        colors: [secondary, accent],
+      );
 
   @override
   AppColorScheme copyWith({
@@ -158,6 +233,10 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
     Color? info,
     Color? disabled,
     bool? isDark,
+    LinearGradient? customHeroGradient,
+    LinearGradient? customPrimaryGradient,
+    LinearGradient? customCardGradient,
+    LinearGradient? customAccentGradient,
   }) {
     return AppColorScheme(
       primary: primary ?? this.primary,
@@ -177,6 +256,11 @@ class AppColorScheme extends ThemeExtension<AppColorScheme> {
       info: info ?? this.info,
       disabled: disabled ?? this.disabled,
       isDark: isDark ?? this.isDark,
+      customHeroGradient: customHeroGradient ?? this.customHeroGradient,
+      customPrimaryGradient:
+          customPrimaryGradient ?? this.customPrimaryGradient,
+      customCardGradient: customCardGradient ?? this.customCardGradient,
+      customAccentGradient: customAccentGradient ?? this.customAccentGradient,
     );
   }
 

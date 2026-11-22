@@ -31,7 +31,9 @@ abstract final class AppToast {
                 vertical: AppSpacing.s8,
               ),
               decoration: BoxDecoration(
-                color: colors.isDark ? AppColors.c370617 : AppColors.c03071E,
+                color: colors.isDark
+                    ? colors.surfaceSecondary
+                    : colors.primaryDark,
                 borderRadius: AppRadius.brFull,
                 border: Border.all(color: colors.border, width: 1.0),
               ),

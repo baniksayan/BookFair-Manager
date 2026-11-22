@@ -25,7 +25,9 @@ abstract final class AppSnackbar {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         duration: duration,
-        backgroundColor: colors.isDark ? AppColors.c370617 : AppColors.c03071E,
+        backgroundColor: colors.isDark
+            ? colors.surfaceSecondary
+            : colors.primaryDark,
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(
           borderRadius: AppRadius.brMedium,

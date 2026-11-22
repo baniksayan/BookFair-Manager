@@ -197,7 +197,7 @@ class PartnerListScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: colors.primary,
-        foregroundColor: colors.isDark ? AppColors.c03071E : AppColors.cFFFFFF,
+        foregroundColor: colors.onPrimary,
         icon: const Icon(Icons.person_add_rounded),
         label: const Text('Add Partner'),
         onPressed: () => context.push('/book-fairs/$fairId/partners/create'),

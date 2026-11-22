@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_radius.dart';
 import '../../app/theme/app_spacing.dart';
 import '../extensions/context_extensions.dart';
@@ -38,7 +37,7 @@ class AppChip extends StatelessWidget {
     final Color fgColor = !enabled
         ? colors.disabled
         : isSelected
-        ? (colors.isDark ? AppColors.c03071E : AppColors.cFFFFFF)
+        ? colors.onPrimary
         : colors.textPrimary;
 
     final Color borderColor = !enabled

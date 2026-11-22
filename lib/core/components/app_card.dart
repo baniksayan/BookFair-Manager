@@ -57,6 +57,18 @@ class AppCard extends StatelessWidget {
     this.gradient,
   }) : variant = AppCardVariant.interactive;
 
+  const AppCard.gradient({
+    super.key,
+    required this.child,
+    this.padding = AppSpacing.insetAll16,
+    this.margin,
+    this.onTap,
+    this.borderColor,
+    this.borderRadius,
+    this.gradient,
+  }) : variant = AppCardVariant.defaultCard,
+       backgroundColor = null;
+
   final Widget child;
   final AppCardVariant variant;
   final EdgeInsetsGeometry padding;

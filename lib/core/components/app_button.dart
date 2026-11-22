@@ -153,11 +153,10 @@ class AppButton extends StatelessWidget {
 
     switch (variant) {
       case AppButtonVariant.primary:
-        final fg = colors.isDark ? AppColors.c03071E : AppColors.cFFFFFF;
-        return (colors.primary, fg, colors.primary);
+        return (colors.primary, colors.onPrimary, colors.primary);
 
       case AppButtonVariant.secondary:
-        return (colors.secondary, AppColors.cFFFFFF, colors.secondary);
+        return (colors.secondary, colors.onSecondary, colors.secondary);
 
       case AppButtonVariant.outlined:
         return (colors.surface, colors.primary, colors.border);

@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../app/constants/app_constants.dart';
 import '../../../../app/router/route_names.dart';
-import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../app/theme/theme_controller.dart';
@@ -171,6 +170,9 @@ class SettingsScreen extends ConsumerWidget {
                           themeNotifier.setThemeMode(newSelection.first);
                         },
                         style: ButtonStyle(
+                          side: WidgetStateProperty.all(
+                            BorderSide(color: colors.border, width: 1.0),
+                          ),
                           backgroundColor: WidgetStateProperty.resolveWith((
                             states,
                           ) {
@@ -183,11 +185,9 @@ class SettingsScreen extends ConsumerWidget {
                             states,
                           ) {
                             if (states.contains(WidgetState.selected)) {
-                              return colors.isDark
-                                  ? AppColors.c03071E
-                                  : AppColors.cFFFFFF;
+                              return colors.onPrimary;
                             }
-                            return colors.textPrimary;
+                            return colors.textSecondary;
                           }),
                         ),
                       ),

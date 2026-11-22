@@ -143,15 +143,14 @@ class BookFairDetailsScreen extends ConsumerWidget {
       if (fair.state.isNotEmpty) fair.state,
     ].join(', ');
 
+    final subAccent = colors.isDark
+        ? colors.accent
+        : AppColors.cFFFFFF.withValues(alpha: 0.9);
+
     return AppCard(
       padding: AppSpacing.insetAll20,
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: colors.isDark
-            ? const [AppColors.c370617, AppColors.c03071E]
-            : const [AppColors.c370617, AppColors.c6A040F],
-      ),
+      gradient: colors.heroGradient,
+      borderColor: colors.border,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -162,7 +161,7 @@ class BookFairDetailsScreen extends ConsumerWidget {
               Text(
                 'CREATED ${DateFormatter.formatDisplay(fair.createdAt)}',
                 style: textTheme.labelSmall?.copyWith(
-                  color: AppColors.cFFBA08,
+                  color: subAccent,
                   letterSpacing: 0.8,
                   fontSize: 10.0,
                 ),
@@ -181,11 +180,7 @@ class BookFairDetailsScreen extends ConsumerWidget {
           AppSpacing.gapH4,
           Row(
             children: [
-              const Icon(
-                Icons.location_on_outlined,
-                size: 16.0,
-                color: AppColors.cFFBA08,
-              ),
+              Icon(Icons.location_on_outlined, size: 16.0, color: subAccent),
               AppSpacing.gapW4,
               Expanded(
                 child: Text(
@@ -200,15 +195,11 @@ class BookFairDetailsScreen extends ConsumerWidget {
           AppSpacing.gapH4,
           Row(
             children: [
-              const Icon(
-                Icons.calendar_today_outlined,
-                size: 14.0,
-                color: AppColors.cFFBA08,
-              ),
+              Icon(Icons.calendar_today_outlined, size: 14.0, color: subAccent),
               AppSpacing.gapW4,
               Text(
                 dateRangeStr,
-                style: textTheme.bodySmall?.copyWith(color: AppColors.cFFBA08),
+                style: textTheme.bodySmall?.copyWith(color: subAccent),
               ),
             ],
           ),

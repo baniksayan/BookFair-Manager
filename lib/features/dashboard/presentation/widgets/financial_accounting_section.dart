@@ -125,7 +125,8 @@ class _FinancialAccountingSectionState
           AppCard.interactive(
             onTap: () => context.pushNamed(RouteNames.cashbook),
             padding: AppSpacing.insetAll16,
-            backgroundColor: colors.surfaceContainerHigh,
+            gradient: colors.cardGradient,
+            borderColor: colors.borderSubtle,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

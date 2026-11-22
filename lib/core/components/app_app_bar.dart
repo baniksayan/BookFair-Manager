@@ -17,6 +17,7 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
     this.centerTitle = false,
     this.showBottomDivider = true,
     this.backgroundColor,
+    this.gradient,
   });
 
   final String title;
@@ -27,6 +28,7 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
   final bool centerTitle;
   final bool showBottomDivider;
   final Color? backgroundColor;
+  final Gradient? gradient;
 
   @override
   Size get preferredSize => Size.fromHeight(
@@ -42,7 +44,8 @@ class AppAppBar extends StatelessWidget implements PreferredSizeWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: effectiveBg,
+        color: gradient == null ? effectiveBg : null,
+        gradient: gradient,
         border: showBottomDivider
             ? Border(bottom: BorderSide(color: colors.divider, width: 1.0))
             : null,

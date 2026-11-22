@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../core/components/app_app_bar.dart';
 import '../../../../core/components/app_chip.dart';
@@ -172,7 +171,7 @@ class BookCatalogueScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         backgroundColor: colors.primary,
-        foregroundColor: colors.isDark ? AppColors.c03071E : AppColors.cFFFFFF,
+        foregroundColor: colors.onPrimary,
         icon: const Icon(Icons.add_rounded),
         label: const Text('Add Book'),
         onPressed: () => context.push('/inventory/books/create'),

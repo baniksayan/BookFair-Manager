@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
 
-import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../core/components/app_button.dart';
@@ -217,9 +216,7 @@ class _StockMovementDialogState extends ConsumerState<StockMovementDialog> {
                             '+ Add Stock',
                             style: TextStyle(
                               color: _isAddition
-                                  ? (colors.isDark
-                                        ? AppColors.c03071E
-                                        : AppColors.cFFFFFF)
+                                  ? colors.onPrimary
                                   : colors.textPrimary,
                               fontWeight: FontWeight.w700,
                               fontSize: 12.0,
@@ -247,9 +244,7 @@ class _StockMovementDialogState extends ConsumerState<StockMovementDialog> {
                             '- Deduct Stock',
                             style: TextStyle(
                               color: !_isAddition
-                                  ? (colors.isDark
-                                        ? AppColors.c03071E
-                                        : AppColors.cFFFFFF)
+                                  ? colors.onPrimary
                                   : colors.textPrimary,
                               fontWeight: FontWeight.w700,
                               fontSize: 12.0,

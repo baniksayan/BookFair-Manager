@@ -37,11 +37,7 @@ class StockBadge extends StatelessWidget {
 
   (String, Color, Color) _resolveStyle(AppColorScheme colors) {
     if (quantity <= 0) {
-      return (
-        'OUT OF STOCK',
-        colors.error,
-        colors.isDark ? AppColors.c03071E : AppColors.cFFFFFF,
-      );
+      return ('OUT OF STOCK', colors.error, AppColors.cFFFFFF);
     } else if (quantity <= 5) {
       return (
         'LOW: $quantity LEFT',

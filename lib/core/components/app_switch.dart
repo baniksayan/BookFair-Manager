@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_radius.dart';
 import '../../app/theme/app_spacing.dart';
 import '../extensions/context_extensions.dart';
@@ -54,9 +53,7 @@ class AppSwitch extends StatelessWidget {
             height: 20.0,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: value
-                  ? (colors.isDark ? AppColors.c03071E : AppColors.cFFFFFF)
-                  : colors.textSecondary,
+              color: value ? colors.onPrimary : colors.textSecondary,
             ),
           ),
         ),

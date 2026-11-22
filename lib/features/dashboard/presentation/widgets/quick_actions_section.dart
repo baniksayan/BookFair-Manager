@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/router/route_names.dart';
-import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../core/components/app_card.dart';
@@ -92,15 +91,20 @@ class QuickActionsSection extends StatelessWidget {
                           width: 32.0,
                           height: 32.0,
                           decoration: BoxDecoration(
-                            color: colors.primary,
+                            gradient: colors.primaryGradient,
                             borderRadius: AppRadius.brSmall,
+                            boxShadow: [
+                              BoxShadow(
+                                color: colors.primary.withValues(alpha: 0.25),
+                                blurRadius: 4.0,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
                           ),
                           child: Icon(
                             action.icon,
                             size: 16.0,
-                            color: colors.isDark
-                                ? AppColors.c03071E
-                                : AppColors.cFFFFFF,
+                            color: colors.onPrimary,
                           ),
                         ),
                         Column(

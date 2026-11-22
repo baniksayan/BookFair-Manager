@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../../app/router/route_names.dart';
-import '../../../../app/theme/app_colors.dart';
 import '../../../../core/extensions/context_extensions.dart';
 import '../../../../core/localization/app_strings.dart';
 
@@ -46,19 +45,18 @@ class MainShellScreen extends StatelessWidget {
       body: child,
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-          color: colors.surface,
-          border: Border(top: BorderSide(color: colors.divider, width: 1.0)),
+          gradient: colors.cardGradient,
+          border: Border(
+            top: BorderSide(color: colors.borderSubtle, width: 1.0),
+          ),
         ),
         child: NavigationBarTheme(
           data: NavigationBarThemeData(
-            backgroundColor: colors.surface,
+            backgroundColor: Colors.transparent,
             indicatorColor: colors.primary,
             iconTheme: WidgetStateProperty.resolveWith((states) {
               if (states.contains(WidgetState.selected)) {
-                return IconThemeData(
-                  color: colors.isDark ? AppColors.c03071E : AppColors.cFFFFFF,
-                  size: 22.0,
-                );
+                return IconThemeData(color: colors.onPrimary, size: 22.0);
               }
               return IconThemeData(color: colors.textSecondary, size: 22.0);
             }),
@@ -72,7 +70,7 @@ class MainShellScreen extends StatelessWidget {
               }
               return TextStyle(
                 fontSize: 12.0,
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
                 color: colors.textSecondary,
               );
             }),

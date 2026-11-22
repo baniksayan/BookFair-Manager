@@ -572,7 +572,7 @@ class _PosSalesCounterScreenState extends ConsumerState<PosSalesCounterScreen> {
           Container(
             padding: const EdgeInsets.all(AppSpacing.s16),
             decoration: BoxDecoration(
-              color: colors.surfaceContainer,
+              gradient: colors.cardGradient,
               border: Border(top: BorderSide(color: colors.borderSubtle)),
             ),
             child: Column(

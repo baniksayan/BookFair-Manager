@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_palettes.dart';
 import '../../app/theme/app_radius.dart';
 import '../../app/theme/app_spacing.dart';
@@ -149,9 +148,7 @@ class _PaletteSwitcherSheetState extends ConsumerState<PaletteSwitcherSheet> {
                         padding: AppSpacing.insetAll16,
                         decoration: BoxDecoration(
                           color: isPreviewSelected
-                              ? (colors.isDark
-                                    ? AppColors.c370617
-                                    : colors.surfaceSecondary)
+                              ? colors.surfaceSecondary
                               : colors.surface,
                           borderRadius: AppRadius.brLarge,
                           border: Border.all(
@@ -201,9 +198,7 @@ class _PaletteSwitcherSheetState extends ConsumerState<PaletteSwitcherSheet> {
                                     child: Text(
                                       'ACTIVE',
                                       style: TextStyle(
-                                        color: colors.isDark
-                                            ? AppColors.c03071E
-                                            : AppColors.cFFFFFF,
+                                        color: colors.onPrimary,
                                         fontSize: 10.0,
                                         fontWeight: FontWeight.w800,
                                         letterSpacing: 0.5,

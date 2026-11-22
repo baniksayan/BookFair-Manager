@@ -19,17 +19,12 @@ class DashboardHeroCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.colors;
     final textTheme = context.textTheme;
+    final badgeAccent = colors.isDark ? colors.accent : AppColors.cFFFFFF;
 
     return AppCard(
       margin: const EdgeInsets.symmetric(horizontal: AppSpacing.s16),
       padding: AppSpacing.insetAll24,
-      gradient: LinearGradient(
-        begin: Alignment.topLeft,
-        end: Alignment.bottomRight,
-        colors: colors.isDark
-            ? const [AppColors.c370617, AppColors.c03071E]
-            : const [AppColors.c370617, AppColors.c6A040F],
-      ),
+      gradient: colors.heroGradient,
       borderColor: colors.border,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -43,23 +38,26 @@ class DashboardHeroCard extends StatelessWidget {
                   vertical: AppSpacing.s4,
                 ),
                 decoration: BoxDecoration(
-                  color: AppColors.c370617,
+                  color: colors.surface.withValues(alpha: 0.25),
                   borderRadius: AppRadius.brSmall,
-                  border: Border.all(color: AppColors.cFFBA08, width: 1.0),
+                  border: Border.all(
+                    color: badgeAccent.withValues(alpha: 0.6),
+                    width: 1.0,
+                  ),
                 ),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    const Icon(
+                    Icon(
                       Icons.auto_awesome_rounded,
                       size: 12.0,
-                      color: AppColors.cFFBA08,
+                      color: badgeAccent,
                     ),
                     AppSpacing.gapW4,
                     Text(
                       'EST. 2026',
                       style: textTheme.labelSmall?.copyWith(
-                        color: AppColors.cFFBA08,
+                        color: badgeAccent,
                         fontWeight: FontWeight.w700,
                         letterSpacing: 1.0,
                       ),
@@ -75,7 +73,7 @@ class DashboardHeroCard extends StatelessWidget {
           ),
           AppSpacing.gapH16,
 
-          // Editorial Title
+          // Editorial Title (Always high-contrast white on rich hero gradient)
           Text(
             AppStrings.dashboardHeroTitle,
             style: textTheme.headlineLarge?.copyWith(
@@ -87,11 +85,13 @@ class DashboardHeroCard extends StatelessWidget {
           ),
           AppSpacing.gapH8,
 
-          // Editorial Description
+          // Editorial Description (Guaranteed high-contrast subtitle)
           Text(
             AppStrings.dashboardHeroSubtitle,
             style: textTheme.bodyMedium?.copyWith(
-              color: AppColors.cFFBA08,
+              color: colors.isDark
+                  ? colors.accent
+                  : AppColors.cFFFFFF.withValues(alpha: 0.92),
               height: 1.45,
             ),
           ),

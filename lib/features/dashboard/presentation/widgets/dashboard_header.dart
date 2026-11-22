@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../app/theme/app_theme.dart';
@@ -32,13 +31,20 @@ class DashboardHeader extends ConsumerWidget {
             width: 44.0,
             height: 44.0,
             decoration: BoxDecoration(
-              color: colors.primary,
+              gradient: colors.primaryGradient,
               borderRadius: AppRadius.brMedium,
               border: Border.all(color: colors.border, width: 1.0),
+              boxShadow: [
+                BoxShadow(
+                  color: colors.primary.withValues(alpha: 0.25),
+                  blurRadius: 8.0,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: Icon(
               Icons.menu_book_rounded,
-              color: colors.isDark ? AppColors.c03071E : AppColors.cFFFFFF,
+              color: colors.onPrimary,
               size: 22.0,
             ),
           ),

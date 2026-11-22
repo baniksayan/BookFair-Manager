@@ -222,6 +222,7 @@ class _MetricTile extends StatelessWidget {
 
     return AppCard(
       padding: AppSpacing.insetAll16,
+      gradient: isHighlighted ? colors.cardGradient : null,
       borderColor: isHighlighted ? colors.primary : colors.border,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,

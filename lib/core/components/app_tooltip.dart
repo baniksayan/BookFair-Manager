@@ -35,7 +35,7 @@ class AppTooltip extends StatelessWidget {
         fontWeight: FontWeight.w500,
       ),
       decoration: BoxDecoration(
-        color: colors.isDark ? AppColors.c370617 : AppColors.c03071E,
+        color: colors.isDark ? colors.surfaceSecondary : colors.primaryDark,
         borderRadius: AppRadius.brSmall,
         border: Border.all(color: colors.border, width: 1.0),
       ),

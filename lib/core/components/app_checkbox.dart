@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import '../../app/theme/app_colors.dart';
 import '../../app/theme/app_radius.dart';
 import '../../app/theme/app_spacing.dart';
 import '../extensions/context_extensions.dart';
@@ -46,11 +45,7 @@ class AppCheckbox extends StatelessWidget {
           ),
         ),
         child: value
-            ? Icon(
-                Icons.check_rounded,
-                size: 16.0,
-                color: colors.isDark ? AppColors.c03071E : AppColors.cFFFFFF,
-              )
+            ? Icon(Icons.check_rounded, size: 16.0, color: colors.onPrimary)
             : null,
       ),
     );

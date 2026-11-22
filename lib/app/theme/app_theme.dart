@@ -51,13 +51,15 @@ abstract final class AppTheme {
     final colorScheme = ColorScheme(
       brightness: brightness,
       primary: colors.primary,
-      onPrimary: colors.isDark ? AppColors.c03071E : AppColors.cFFFFFF,
+      onPrimary: colors.onPrimary,
       primaryContainer: colors.primaryDark,
       onPrimaryContainer: AppColors.cFFFFFF,
       secondary: colors.secondary,
-      onSecondary: AppColors.cFFFFFF,
+      onSecondary: colors.onSecondary,
       secondaryContainer: colors.accent,
-      onSecondaryContainer: AppColors.cFFFFFF,
+      onSecondaryContainer: colors.isDark
+          ? colors.background
+          : colors.textPrimary,
       surface: colors.surface,
       onSurface: colors.textPrimary,
       error: colors.error,
@@ -154,7 +156,7 @@ abstract final class AppTheme {
           vertical: AppSpacing.s16,
         ),
         labelStyle: textTheme.bodyMedium?.copyWith(color: colors.textSecondary),
-        hintStyle: textTheme.bodyMedium?.copyWith(color: colors.disabled),
+        hintStyle: textTheme.bodyMedium?.copyWith(color: colors.hint),
         helperStyle: textTheme.bodySmall?.copyWith(color: colors.textSecondary),
         errorStyle: textTheme.bodySmall?.copyWith(
           color: colors.error,
@@ -184,6 +186,53 @@ abstract final class AppTheme {
           borderRadius: AppRadius.brMedium,
           borderSide: BorderSide(color: colors.disabled, width: 1.0),
         ),
+      ),
+
+      // --- Segmented Button Theme ---
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: ButtonStyle(
+          side: WidgetStateProperty.all(
+            BorderSide(color: colors.border, width: 1.0),
+          ),
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return colors.primary;
+            }
+            return colors.surface;
+          }),
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return colors.onPrimary;
+            }
+            return colors.textSecondary;
+          }),
+        ),
+      ),
+
+      // --- Navigation Bar Theme ---
+      navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: colors.surface,
+        indicatorColor: colors.primary,
+        iconTheme: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return IconThemeData(color: colors.onPrimary, size: 22.0);
+          }
+          return IconThemeData(color: colors.textSecondary, size: 22.0);
+        }),
+        labelTextStyle: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return TextStyle(
+              fontSize: 12.0,
+              fontWeight: FontWeight.w700,
+              color: colors.primary,
+            );
+          }
+          return TextStyle(
+            fontSize: 12.0,
+            fontWeight: FontWeight.w500,
+            color: colors.textSecondary,
+          );
+        }),
       ),
 
       // --- Progress Indicator Theme ---

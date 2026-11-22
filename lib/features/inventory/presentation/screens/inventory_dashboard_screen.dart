@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../app/theme/app_colors.dart';
 import '../../../../app/theme/app_radius.dart';
 import '../../../../app/theme/app_spacing.dart';
 import '../../../../core/components/app_badge.dart';
@@ -427,9 +426,7 @@ class InventoryDashboardScreen extends ConsumerWidget {
             Icon(
               icon,
               size: 16.0,
-              color: isProminent
-                  ? (colors.isDark ? AppColors.c03071E : AppColors.cFFFFFF)
-                  : colors.primary,
+              color: isProminent ? colors.onPrimary : colors.primary,
             ),
             AppSpacing.gapW8,
             Text(
@@ -437,9 +434,7 @@ class InventoryDashboardScreen extends ConsumerWidget {
               style: TextStyle(
                 fontSize: 12.0,
                 fontWeight: FontWeight.w700,
-                color: isProminent
-                    ? (colors.isDark ? AppColors.c03071E : AppColors.cFFFFFF)
-                    : colors.textPrimary,
+                color: isProminent ? colors.onPrimary : colors.textPrimary,
               ),
             ),
           ],

@@ -151,9 +151,7 @@ class BookDetailsScreen extends ConsumerWidget {
                                           fontWeight: FontWeight.w700,
                                           color: availableStock > 0
                                               ? colors.textPrimary
-                                              : (colors.isDark
-                                                    ? AppColors.c03071E
-                                                    : AppColors.cFFFFFF),
+                                              : AppColors.cFFFFFF,
                                         ),
                                       ),
                                     ),

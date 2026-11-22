@@ -128,7 +128,11 @@ class _ActivityListTile extends StatelessWidget {
             child: Icon(
               icon,
               size: 18.0,
-              color: colors.isDark ? AppColors.c03071E : AppColors.cFFFFFF,
+              color:
+                  ThemeData.estimateBrightnessForColor(iconBg) ==
+                      Brightness.dark
+                  ? AppColors.cFFFFFF
+                  : AppColors.c000000,
             ),
           ),
           AppSpacing.gapW12,

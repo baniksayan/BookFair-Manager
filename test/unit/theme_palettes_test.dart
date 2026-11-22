@@ -255,5 +255,94 @@ void main() {
       );
       expect(metaBox.get(DatabaseConstants.selectedPaletteKey), 'forest_green');
     });
+
+    group('QA Report Contrast & Accessibility Verification (WCAG 2.1 AA/AAA)', () {
+      double computeContrast(Color c1, Color c2) {
+        final l1 = c1.computeLuminance();
+        final l2 = c2.computeLuminance();
+        final bright = l1 > l2 ? l1 : l2;
+        final dark = l1 > l2 ? l2 : l1;
+        return (bright + 0.05) / (dark + 0.05);
+      }
+
+      test('DEF-002: all darkScheme presets have surface relative luminance <= 0.15', () {
+        for (final palette in AppPalettes.values) {
+          final dark = palette.darkScheme;
+          final surfaceLum = dark.surface.computeLuminance();
+          expect(
+            surfaceLum,
+            lessThanOrEqualTo(0.15),
+            reason:
+                '${palette.name} dark surface luminance $surfaceLum must be <= 0.15 (found inverted surface in DEF-002)',
+          );
+        }
+      });
+
+      test('WCAG AAA: all 14 schemes achieve >= 7.0:1 primary text contrast against surface', () {
+        for (final palette in AppPalettes.values) {
+          for (final scheme in [palette.lightScheme, palette.darkScheme]) {
+            final contrast = computeContrast(
+              scheme.surface,
+              scheme.textPrimary,
+            );
+            expect(
+              contrast,
+              greaterThanOrEqualTo(7.0),
+              reason:
+                  '${palette.name} (${scheme.isDark ? "Dark" : "Light"}) primary text contrast $contrast must be >= 7.0:1 (AAA)',
+            );
+          }
+        }
+      });
+
+      test('WCAG AA: all 14 schemes achieve >= 4.5:1 secondary text contrast against surface', () {
+        for (final palette in AppPalettes.values) {
+          for (final scheme in [palette.lightScheme, palette.darkScheme]) {
+            final contrast = computeContrast(
+              scheme.surface,
+              scheme.textSecondary,
+            );
+            expect(
+              contrast,
+              greaterThanOrEqualTo(4.5),
+              reason:
+                  '${palette.name} (${scheme.isDark ? "Dark" : "Light"}) secondary text contrast $contrast must be >= 4.5:1 (AA)',
+            );
+          }
+        }
+      });
+
+      test('DEF-005 & Checklist item 5: all 14 schemes achieve >= 3.0:1 border contrast against surface', () {
+        for (final palette in AppPalettes.values) {
+          for (final scheme in [palette.lightScheme, palette.darkScheme]) {
+            final contrast = computeContrast(scheme.surface, scheme.border);
+            expect(
+              contrast,
+              greaterThanOrEqualTo(3.0),
+              reason:
+                  '${palette.name} (${scheme.isDark ? "Dark" : "Light"}) border contrast $contrast must be >= 3.0:1',
+            );
+          }
+        }
+      });
+
+      test('DEF-001: hero gradient in both light and dark achieves >= 7.0:1 contrast with pure white text', () {
+        const white = Color(0xFFFFFFFF);
+        for (final palette in AppPalettes.values) {
+          for (final scheme in [palette.lightScheme, palette.darkScheme]) {
+            final gradient = scheme.heroGradient;
+            for (final stopColor in gradient.colors) {
+              final contrast = computeContrast(stopColor, white);
+              expect(
+                contrast,
+                greaterThanOrEqualTo(7.0),
+                reason:
+                    '${palette.name} (${scheme.isDark ? "Dark" : "Light"}) hero gradient stop 0x${stopColor.toARGB32().toRadixString(16)} contrast $contrast with white must be >= 7.0:1',
+              );
+            }
+          }
+        }
+      });
+    });
   });
 }

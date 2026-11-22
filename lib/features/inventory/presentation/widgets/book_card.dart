@@ -139,9 +139,13 @@ class BookCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: 9.0,
                             fontWeight: FontWeight.w800,
-                            color: colors.isDark
-                                ? AppColors.c03071E
-                                : AppColors.cFFFFFF,
+                            color:
+                                ThemeData.estimateBrightnessForColor(
+                                      colors.accent,
+                                    ) ==
+                                    Brightness.dark
+                                ? AppColors.cFFFFFF
+                                : AppColors.c000000,
                           ),
                         ),
                       ),

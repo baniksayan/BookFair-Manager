@@ -80,10 +80,15 @@ class AppDialog extends StatelessWidget {
                   width: 44.0,
                   height: 44.0,
                   decoration: BoxDecoration(
-                    color: isDestructive ? colors.error : colors.primary,
+                    color: isDestructive ? colors.error : null,
+                    gradient: isDestructive ? null : colors.primaryGradient,
                     borderRadius: AppRadius.brMedium,
                   ),
-                  child: Icon(icon, color: AppColors.cFFFFFF, size: 24.0),
+                  child: Icon(
+                    icon,
+                    color: isDestructive ? AppColors.cFFFFFF : colors.onPrimary,
+                    size: 24.0,
+                  ),
                 ),
                 AppSpacing.gapH16,
               ],
