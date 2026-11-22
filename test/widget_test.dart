@@ -1,30 +1,33 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
+import 'package:bookfair_manager/app/app.dart';
+import 'package:bookfair_manager/core/localization/app_strings.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:bookfair_manager/main.dart';
+import 'test_helper.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  setUpAll(() async {
+    await TestDatabaseHelper.setUpSuiteDatabase();
+  });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  tearDownAll(() async {
+    await TestDatabaseHelper.tearDownSuiteDatabase();
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+  setUp(() async {
+    await TestDatabaseHelper.resetDatabase();
+  });
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  testWidgets('BookFair Manager app loads dashboard smoke test', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(const ProviderScope(child: BookFairManagerApp()));
+
+    // Wait for the asynchronous microtask and router to settle
+    await tester.pumpAndSettle();
+
+    // Verify app brand is rendered
+    expect(find.text(AppStrings.appName), findsWidgets);
+    expect(find.text(AppStrings.dashboardHeroAction), findsOneWidget);
   });
 }
